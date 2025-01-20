@@ -17,12 +17,19 @@ public class RealTimeStockPriceService {
     public Double getCurrentPrice(String ticker) {
         String url = String.format("%s?symbol=%s&token=%s", API_URL, ticker, apiKey);
 
-        // A new instance of RestTemplate is created to make the HTTP GET request to Finnhub's API.
         RestTemplate restTemplate = new RestTemplate();
 
         try {
+            // Fetch and map the API response
             FinnhubResponse response = restTemplate.getForObject(url, FinnhubResponse.class);
-            return response.getCurrentPrice();
+
+            // Debugging: Log the response
+            if (response != null) {
+                System.out.println("Ticker: " + ticker + ", Current Price: " + response.getCurrentPrice());
+                return response.getCurrentPrice();
+            } else {
+                throw new RuntimeException("Empty response from Finnhub API for ticker: " + ticker);
+            }
         } catch (Exception e) {
             throw new RuntimeException("Error fetching price for ticker: " + ticker, e);
         }
@@ -32,9 +39,12 @@ public class RealTimeStockPriceService {
     private static class FinnhubResponse {
         private double c; // Current price
 
-        // Getter for the current price
         public double getCurrentPrice() {
             return c;
+        }
+
+        public void setC(double c) {
+            this.c = c;
         }
     }
 }
