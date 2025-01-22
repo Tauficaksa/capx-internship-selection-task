@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-import Footer from '../components/Footer';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 function Dashboard() {
   return (
@@ -14,7 +14,7 @@ function Dashboard() {
       }}
     >
       <Header />
-      {/* Middle Component: Dynamic content rendered here */}
+      {/* Dynamic content based on the nested routes */}
       <Box sx={{ flex: '1 0 auto', p: 3 }}>
         <Outlet />
       </Box>

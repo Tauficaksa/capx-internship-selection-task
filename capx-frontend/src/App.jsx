@@ -1,26 +1,35 @@
-import { useState } from 'react'
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import AddStock from './components/AddStock';
+import PortfolioMetrics from './components/PortfolioMetrics';
+import RealTimeData from './components/RealTimeData';
+import Dashboard from './pages/DashBoard';
 import './App.css'
-import { Route, Routes } from 'react-router-dom'
-import LandingPage from './pages/LandingPage'
-import Dashboard from './pages/DashBoard'
-import PortfolioMetrics from './components/PortfolioMetrics'
-import AddStock from './components/AddStock'
-import RealTimeData from './components/RealTimeData'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <Routes>
-        <Route path='/' element={<LandingPage/>}/>
-        <Route path='/dashboard' element={<Dashboard/>}/>
+    <Routes>
+      {/* Landing Page */}
+      <Route path="/" element={<LandingPage />} />
+
+      {/* Dashboard Layout with Nested Routes */}
+      <Route path="/dashboard" element={<Dashboard />}>
         <Route path="add-stock" element={<AddStock />} />
-        <Route path="portfolio-metrics" element={<PortfolioMetrics />} />
         <Route path="real-time-data" element={<RealTimeData />} />
-      </Routes>
-    </>
-  )
+        <Route path="portfolio-metrics" element={<PortfolioMetrics />} />
+        {/* Default content for /dashboard */}
+        <Route
+          index
+          element={
+            <h2 style={{ textAlign: 'center', marginTop: '2rem' }}>
+              Welcome to the Dashboard!
+            </h2>
+          }
+        />
+      </Route>
+    </Routes>
+  );
 }
 
-export default App
+export default App;
