@@ -18,29 +18,44 @@ const PortfolioMetrics = () => {
         setData(response.data);
         setLoading(false);
 
-        // Show a success toast for the status code
-        toast.success(`Success! Status Code: ${statusCode}`, {
-          position: 'top-right',
-          autoClose: 3000,
-        });
+        // Show toast based on the status code
+        if (statusCode === 200) {
+          toast.success(`Data fetched successfully! Status Code: ${statusCode}`, {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+        } else if (statusCode === 204) {
+          toast.info('No content available. Status Code: 204', {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+        }
       })
       .catch((err) => {
         setLoading(false);
         const statusCode = err.response ? err.response.status : 'Unknown';
-        setError(err.message);
-
-        // Show an error toast for the status code
-        toast.error(`Error! Status Code: ${statusCode} - ${err.message}`, {
-          position: 'top-right',
-          autoClose: 3000,
-        });
+        setError(`Status Code: ${statusCode} - ${err.message}`);
+      
+        // Handle 500 explicitly and other errors generically
+        if (statusCode === 500) {
+          toast.error(`Server error occurred! Status Code: 500`, {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+        } else {
+          // Generic toast for other errors
+          toast.error(`Error! Status Code: ${statusCode} - ${err.message}`, {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+        }
       });
   }, []);
 
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70dvh' }}>
-        <CircularProgress />
+        <CircularProgress sx={{color:'black'}}/>
       </Box>
     );
   }
@@ -51,6 +66,19 @@ const PortfolioMetrics = () => {
         <Typography variant="h6" color="error">
           {error}
         </Typography>
+        <ToastContainer />
+      </Box>
+    );
+  }
+
+  // Check if `data` is null before rendering
+  if (!data) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70dvh' }}>
+        <Typography variant="h6" color="textSecondary">
+          No data available.
+        </Typography>
+        <ToastContainer />
       </Box>
     );
   }
@@ -76,40 +104,46 @@ const PortfolioMetrics = () => {
       </Typography>
 
       {/* Top Stock Card */}
-      <Card
-        sx={{
-          maxWidth: 400,
-          width: '100%',
-          borderRadius: 2,
-          boxShadow: 3,
-          backgroundColor: '#fff',
-          color: '#000000',
-          textAlign: 'center',
-          transition: 'all 0.5s ease',
-          '&:hover': {
-            backgroundColor: '#f0f0f0',
-            boxShadow: '8px 8px 0px black',
-          },
-        }}
-      >
-        <CardContent>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center', color: '#000000' }}>
-            Top Performing Stock
-          </Typography>
-          <Typography variant="body1" sx={{color:'#000000'}}>
-            <strong style={{color:'#000000'}}>Name:</strong> {data.topStock.name}
-          </Typography>
-          <Typography variant="body1" sx={{color:'#000000'}}>
-            <strong style={{color:'#000000'}}>Ticker:</strong> {data.topStock.ticker}
-          </Typography>
-          <Typography variant="body1" sx={{color:'#000000'}}>
-            <strong style={{color:'#000000'}}>Quantity:</strong> {data.topStock.quantity}
-          </Typography>
-          <Typography variant="body1" sx={{color:'#000000'}}>
-            <strong style={{color:'#000000'}}>Buy Price:</strong> ${data.topStock.buyPrice.toFixed(2)}
-          </Typography>
-        </CardContent>
-      </Card>
+      {data.topStock ? (
+        <Card
+          sx={{
+            maxWidth: 400,
+            width: '100%',
+            borderRadius: 2,
+            boxShadow: 3,
+            backgroundColor: '#fff',
+            color: '#000000',
+            textAlign: 'center',
+            transition: 'all 0.5s ease',
+            '&:hover': {
+              backgroundColor: '#f0f0f0',
+              boxShadow: '8px 8px 0px black',
+            },
+          }}
+        >
+          <CardContent>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', textAlign: 'center', color: '#000000' }}>
+              Top Performing Stock
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#000000' }}>
+              <strong>Name:</strong> {data.topStock.name}
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#000000' }}>
+              <strong>Ticker:</strong> {data.topStock.ticker}
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#000000' }}>
+              <strong>Quantity:</strong> {data.topStock.quantity}
+            </Typography>
+            <Typography variant="body1" sx={{ color: '#000000' }}>
+              <strong>Buy Price:</strong> ${data.topStock.buyPrice.toFixed(2)}
+            </Typography>
+          </CardContent>
+        </Card>
+      ) : (
+        <Typography variant="body1" sx={{ color: '#000000' }}>
+          No top-performing stock available.
+        </Typography>
+      )}
     </Box>
   );
 };
