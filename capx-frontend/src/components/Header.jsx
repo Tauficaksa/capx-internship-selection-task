@@ -10,8 +10,8 @@ const Header = () => {
           <Link to="/dashboard/add-stock" style={{ color: '#FFFFFF', textDecoration: 'none' }}>
             Add Stock
           </Link>
-          <Link to="/dashboard/real-time-data" style={{ color: '#FFFFFF', textDecoration: 'none' }}>
-            Real-Time Data
+          <Link to="/dashboard/view-edit-delete" style={{ color: '#FFFFFF', textDecoration: 'none' }}>
+            View Stocks
           </Link>
           <Link to="/dashboard/portfolio-metrics" style={{ color: '#FFFFFF', textDecoration: 'none' }}>
             Portfolio Metrics

@@ -3,9 +3,9 @@ import { Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import AddStock from './components/AddStock';
 import PortfolioMetrics from './components/PortfolioMetrics';
-import RealTimeData from './components/RealTimeData';
 import Dashboard from './pages/DashBoard';
 import './App.css'
+import ViewStocks from './components/ViewStocks';
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
       {/* Dashboard Layout with Nested Routes */}
       <Route path="/dashboard" element={<Dashboard />}>
         <Route path="add-stock" element={<AddStock />} />
-        <Route path="real-time-data" element={<RealTimeData />} />
+        <Route path="view-edit-delete" element={<ViewStocks />} />
         <Route path="portfolio-metrics" element={<PortfolioMetrics />} />
         {/* Default content for /dashboard */}
         <Route
