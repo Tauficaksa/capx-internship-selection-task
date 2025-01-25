@@ -20,14 +20,17 @@ import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ViewStocks = () => {
+  // State for managing the list of stocks
   const [stocks, setStocks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [tickers, setTickers] = useState([]);
-  const [loadingTickers, setLoadingTickers] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading state for stocks
+  const [tickers, setTickers] = useState([]); // List of valid tickers
+  const [loadingTickers, setLoadingTickers] = useState(false); // Loading state for tickers
 
+  // Modal and stock selection states for editing
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
 
+  // State to store updated stock data
   const [updatedData, setUpdatedData] = useState({
     name: '',
     ticker: '',
@@ -35,15 +38,17 @@ const ViewStocks = () => {
     buyPrice: '',
   });
 
+  // API base URL and API key for fetching tickers
   const apiBaseUrl = 'http://localhost:8080/api';
   const tickerApiKey = import.meta.env.VITE_FINNHUB_API_KEY;
 
+  // Fetch all stocks when the component mounts
   useEffect(() => {
     axios
       .get(`${apiBaseUrl}/stocks`)
       .then((response) => {
-        setStocks(response.data);
-        setLoading(false);
+        setStocks(response.data); // Set the fetched stocks
+        setLoading(false); // Disable loading
       })
       .catch((error) => {
         console.error('Error fetching stocks:', error);
@@ -55,6 +60,7 @@ const ViewStocks = () => {
       });
   }, []);
 
+  // Fetch available tickers for validation
   const fetchTickers = () => {
     if (!tickerApiKey) {
       toast.error('API key for ticker validation is missing.', {
@@ -69,7 +75,7 @@ const ViewStocks = () => {
     axios
       .get(`https://finnhub.io/api/v1/stock/symbol?exchange=US&token=${tickerApiKey}`)
       .then((response) => {
-        setTickers(response.data.map((item) => item.symbol));
+        setTickers(response.data.map((item) => item.symbol)); // Map ticker symbols
         setLoadingTickers(false);
       })
       .catch((error) => {
@@ -82,6 +88,7 @@ const ViewStocks = () => {
       });
   };
 
+  // Delete a stock by its ID
   const handleDelete = (id) => {
     axios
       .delete(`${apiBaseUrl}/deletestock/${id}`)
@@ -91,7 +98,7 @@ const ViewStocks = () => {
             position: 'top-right',
             autoClose: 3000,
           });
-          setStocks(stocks.filter((stock) => stock.id !== id));
+          setStocks(stocks.filter((stock) => stock.id !== id)); // Remove deleted stock from state
         }
       })
       .catch((error) => {
@@ -109,31 +116,36 @@ const ViewStocks = () => {
       });
   };
 
+  // Open the edit modal and set the selected stock
   const openEditModal = (stock) => {
     setSelectedStock(stock);
     setUpdatedData({ ...stock });
-    fetchTickers();
+    fetchTickers(); // Fetch tickers for validation
     setEditModalOpen(true);
   };
 
+  // Close the edit modal
   const closeEditModal = () => {
     setEditModalOpen(false);
     setSelectedStock(null);
   };
 
+  // Handle form input changes for stock updates
   const handleUpdateChange = (e) => {
     const { name, value } = e.target;
     setUpdatedData({ ...updatedData, [name]: value });
   };
 
+  // Handle changes in the ticker selection
   const handleTickerChange = (event, value) => {
     setUpdatedData({ ...updatedData, ticker: value });
   };
 
+  // Handle stock update submission
   const handleUpdateSubmit = (e) => {
     e.preventDefault();
 
-    // Validation checks
+    // Validation for input fields
     if (!updatedData.name.trim()) {
       toast.error('Stock name cannot be empty.', {
         position: 'top-right',
@@ -166,7 +178,7 @@ const ViewStocks = () => {
       return;
     }
 
-    // If validation passes, proceed with the API call
+    // API call to update stock
     axios
       .put(`${apiBaseUrl}/updatestock/${selectedStock.id}`, updatedData)
       .then((response) => {
@@ -180,7 +192,7 @@ const ViewStocks = () => {
               stock.id === selectedStock.id ? { ...selectedStock, ...updatedData } : stock
             )
           );
-          closeEditModal();
+          closeEditModal(); // Close the modal after updating
         }
       })
       .catch((error) => {
@@ -198,6 +210,7 @@ const ViewStocks = () => {
       });
   };
 
+  // Display a loading spinner if stocks are still loading
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', padding: 5 }}>
@@ -208,12 +221,17 @@ const ViewStocks = () => {
 
   return (
     <Box sx={{ padding: 3 }}>
-      <ToastContainer />
-      <Typography variant="h4" gutterBottom>
+      <ToastContainer /> {/* Notification container */}
+      <Typography variant="h4" gutterBottom align="center">
         Stocks List
       </Typography>
-      <TableContainer component={Paper}>
-        <Table>
+
+      {/* Table to display stocks */}
+      <TableContainer
+        component={Paper}
+        sx={{ maxWidth: '100%', overflowX: 'auto', margin: '0 auto', maxHeight: 400 }}
+      >
+        <Table stickyHeader>
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -253,6 +271,7 @@ const ViewStocks = () => {
         </Table>
       </TableContainer>
 
+      {/* Modal for editing stock */}
       <Modal open={editModalOpen} onClose={closeEditModal}>
         <Box
           sx={{
@@ -260,14 +279,15 @@ const ViewStocks = () => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 400,
+            width: '90%',
+            maxWidth: 400,
             bgcolor: 'background.paper',
             boxShadow: 24,
             p: 4,
             borderRadius: 2,
           }}
         >
-          <Typography variant="h6" gutterBottom>
+          <Typography variant="h6" gutterBottom align="center">
             Update Stock
           </Typography>
           <form onSubmit={handleUpdateSubmit}>
