@@ -23,7 +23,7 @@ function App() {
           index
           element={
             <h2 style={{ textAlign: 'center', marginTop: '2rem' }}>
-              Welcome to the Dashboard!
+              Welcome to the Stocks Protfolio - Dashboard!
             </h2>
           }
         />
